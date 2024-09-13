@@ -1,0 +1,43 @@
+@page "/transaction-data"
+@using HimaikFinanceMobile.Services
+@inject ApiService TransactionDataService
+
+@if (transactionData == null)
+{
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Credit</th>
+            <th>Debit</th>
+            <th>Balance</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var data in transactionData)
+        {
+            <tr>
+                <td>@data.Debit.ToString("F0")</td>
+                <td>@data.Credit.ToString("F0")</td>
+                <td>@data.Balance.ToString("F0")</td>
+                <td>@data.Notes</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<HimaikFinanceMobile.Models.TransactionData> transactionData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        transactionData = await TransactionDataService.GetAllTransactionsAsync(1, 10);
+    }
+}

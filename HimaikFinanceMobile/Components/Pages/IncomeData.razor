@@ -1,0 +1,42 @@
+@page "/income-data"
+@using HimaikFinanceMobile.Services
+@inject ApiService IncomeDataService
+
+@if (incomeData == null)
+{
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Nominal</th>
+            <th>Transfer Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var data in incomeData)
+        {
+            <tr>
+                <td>@data.Name</td>
+                <td>@data.Nominal.ToString("F0")</td>
+                <td>@data.TransferDate.ToShortDateString()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<HimaikFinanceMobile.Models.IncomeData> incomeData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        incomeData = await IncomeDataService.GetIncomeDataAsync("asc", 1, 10);
+    }
+
+}

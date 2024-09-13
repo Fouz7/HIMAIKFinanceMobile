@@ -1,0 +1,27 @@
+@code {
+    [Parameter] public string Title { get; set; }
+
+    [Parameter] public string Data { get; set; }
+
+    [Parameter] public string? Image { get; set; }
+
+    [Parameter] public string Color { get; set; } = "#ffffff";
+}
+
+<div class="card" style="background-color:@Color;">
+    <div class="card-body">
+        <h5 class="card-title">@Title</h5>
+
+        @if (!string.IsNullOrEmpty(Image))
+        {
+            <div class="if-minister-of-finance">
+                <img src="@Image" alt="Card image" class="card-img-top"/>
+                <p class="card-text">@Data</p>
+            </div>
+        }
+        else
+        {
+            <p class="card-text">@Data</p>
+        }
+    </div>
+</div>

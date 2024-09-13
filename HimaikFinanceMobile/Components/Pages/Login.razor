@@ -1,0 +1,45 @@
+@page "/login"
+@using HimaikFinanceMobile.Services
+@inject ApiService ApiService
+@inject NavigationManager Navigation
+
+<div class="login-container">
+    <EditForm Model="loginModel" OnValidSubmit="HandleLogin" class="login-form">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label>Username:</label>
+            <InputText @bind-Value="loginModel.Username" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Password:</label>
+            <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </EditForm>
+</div>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+
+    private async Task HandleLogin()
+    {
+        var token = await ApiService.LoginUserAsync(loginModel.Username, loginModel.Password);
+        if (!string.IsNullOrEmpty(token))
+        {
+            await SecureStorage.SetAsync("authToken", token);
+            Navigation.NavigateTo("/dashboard");
+        }
+        else
+        {
+            // Tampilkan pesan error
+        }
+    }
+
+    private class LoginModel
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}

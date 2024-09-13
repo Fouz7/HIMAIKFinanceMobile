@@ -1,0 +1,45 @@
+.card {
+    position: relative;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    width: 50%;
+    height: auto;
+}
+
+.if-minister-of-finance {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-top: 23px;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 16px;
+}
+
+.card-title {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #fff;
+}
+
+
+.card-text {
+    font-size: 2rem;
+    color: #fff;
+    text-align: center;
+    margin-top: 30px;
+}

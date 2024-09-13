@@ -1,0 +1,74 @@
+@page "/dashboard"
+@using HimaikFinanceMobile.Components.Pages.Components
+@using HimaikFinanceMobile.Services
+@using Microsoft.Extensions.Logging
+@inject ApiService ApiService
+@inject ILogger<Home> _logger
+
+@inject NavigationManager Navigation
+
+@if (_isAuthenticated)
+{
+    
+    @if (totalNominal != null && totalDebit != null && lastBalance != null)
+    {
+        <button @onclick="Logout">Logout</button>
+        @foreach (var card in cards)
+        {
+            <Card Title="@card.Title" Data="@card.Data" Color="@card.Color" Image="@card.Image" />
+        }
+    }
+    else
+    {
+        <div class="spinner-container">
+            <div class="spinner"></div>
+        </div>
+    }
+}
+
+@code {
+    private bool _isAuthenticated = false;
+    private string? totalNominal;
+    private string? totalDebit;
+    private string? lastBalance;
+    private List<CardData> cards = new List<CardData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await SecureStorage.GetAsync("authToken");
+        if (string.IsNullOrEmpty(token))
+        {
+            Navigation.NavigateTo("/login");
+        }
+        else
+        {
+            _isAuthenticated = true;
+            var transactionData = await ApiService.GetAllTransactionsAsync();
+            totalNominal = transactionData.Sum(data => data.Credit).ToString("F0");
+            totalDebit = transactionData.Sum(data => data.Debit).ToString("F0");
+            lastBalance = transactionData.LastOrDefault()?.Balance.ToString("F0");
+
+            cards = new List<CardData>
+            {
+                new CardData { Title = "Balance", Data = lastBalance, Color = "#A0C4FF" },
+                new CardData { Title = "Total Income", Data = totalNominal, Color = "#84A98C" },
+                new CardData { Title = "Total Outcome", Data = totalDebit, Color = "#FF6B6B" },
+            };
+        }
+    }
+
+    private async Task Logout()
+    {
+        await SecureStorage.SetAsync("authToken", string.Empty);
+        Navigation.NavigateTo("/login");
+    }
+    
+    private class CardData
+    {
+        public string Title { get; set; }
+        public string Data { get; set; }
+        public string Color { get; set; }
+        public string? Image { get; set; }
+    }
+    
+}

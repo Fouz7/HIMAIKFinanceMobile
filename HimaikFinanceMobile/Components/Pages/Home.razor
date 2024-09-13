@@ -1,0 +1,58 @@
+﻿@page "/"
+@using HimaikFinanceMobile.Components.Pages.Components
+@using HimaikFinanceMobile.Services
+@using Microsoft.Extensions.Logging
+@inject ApiService ApiService
+@inject ILogger<Home> _logger
+
+@if (totalNominal != null && totalDebit != null && lastBalance != null)
+{
+    @foreach (var card in cards)
+    {
+        <Card Title="@card.Title" Data="@card.Data" Color="@card.Color" Image="@card.Image" />
+    }
+}
+else
+{
+    <div class="spinner-container">
+        <div class="spinner"></div>
+    </div>
+}
+
+@code {
+    private string? totalNominal;
+    private string? totalDebit;
+    private string? lastBalance;
+    private List<CardData> cards = new List<CardData>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var transactionData = await ApiService.GetAllTransactionsAsync();
+            totalNominal = transactionData.Sum(data => data.Credit).ToString("F0");
+            totalDebit = transactionData.Sum(data => data.Debit).ToString("F0");
+            lastBalance = transactionData.LastOrDefault()?.Balance.ToString("F0");
+
+            cards = new List<CardData>
+            {
+                new CardData { Title = "Balance", Data = lastBalance, Color = "#A0C4FF" },
+                new CardData { Title = "Total Income", Data = totalNominal, Color = "#84A98C" },
+                new CardData { Title = "Total Outcome", Data = totalDebit, Color = "#FF6B6B" },
+                new CardData { Title = "Minister of Finance", Data = "Aldrian", Color = "#5E503F", Image = "aldrian.png" }
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error: {ex.Message}");
+        }
+    }
+
+    private class CardData
+    {
+        public string Title { get; set; }
+        public string Data { get; set; }
+        public string Color { get; set; }
+        public string? Image { get; set; }
+    }
+}
